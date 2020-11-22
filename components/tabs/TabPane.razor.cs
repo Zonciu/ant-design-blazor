@@ -5,12 +5,11 @@ namespace AntDesign
     public partial class TabPane : AntDomComponentBase
     {
         private const string PrefixCls = "ant-tabs-tab";
-        private Tabs _parent;
-
-        internal ClassMapper _classMapper = new ClassMapper();
 
         internal bool IsActive { get; set; }
         internal bool HasRendered { get; set; }
+
+        internal ElementReference TabRef { get; set; }
 
         public TabPane()
         {
@@ -24,21 +23,13 @@ namespace AntDesign
         }
 
         [CascadingParameter]
-        internal Tabs Parent
-        {
-            get
-            {
-                return _parent;
-            }
-            set
-            {
-                if (_parent == null)
-                {
-                    _parent = value;
-                    _parent.AddTabPane(this);
-                }
-            }
-        }
+        internal Tabs Tabs { get; set; }
+
+        [CascadingParameter(Name = "IsTab")]
+        internal bool IsTab { get; set; }
+
+        [CascadingParameter(Name = "IsContent")]
+        internal bool IsContent { get; set; }
 
         /// <summary>
         /// Forced render of content in tabs, not lazy render after clicking on tabs
@@ -67,20 +58,22 @@ namespace AntDesign
         [Parameter]
         public bool Closable { get; set; } = true;
 
-        protected override void OnParametersSet()
+        protected override void OnInitialized()
         {
-            base.OnParametersSet();
+            base.OnInitialized();
 
-            _classMapper.Clear().
-                Add(PrefixCls)
-                .If($"{PrefixCls}-active", () => IsActive)
-                .If($"{PrefixCls}-with-remove", () => Closable)
-                .If($"{PrefixCls}-disabled", () => Disabled);
+            ClassMapper.Clear().
+              Add(PrefixCls)
+              .If($"{PrefixCls}-active", () => IsActive)
+              .If($"{PrefixCls}-with-remove", () => Closable)
+              .If($"{PrefixCls}-disabled", () => Disabled);
+
+            Tabs?.AddTabPane(this);
         }
 
         protected override void Dispose(bool disposing)
         {
-            _parent?._panes.Remove(this);
+            Tabs?._panes.Remove(this);
             base.Dispose(disposing);
         }
     }

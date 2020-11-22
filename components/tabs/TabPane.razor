@@ -1,2 +1,44 @@
 ﻿@namespace AntDesign
 @inherits AntDomComponentBase
+
+@if (IsTab)
+{
+    <button @ref="TabRef" type="button" role="tab" aria-selected="@(IsActive)" tabindex="0" class="@ClassMapper.Class" id="@($"rc-tabs-{Id}-tab-{Key}")" aria-controls="@($"rc-tabs-{Id}-tab-{Key}")"
+            disabled="@(Disabled)"
+            draggable="@Tabs?.Draggable"
+            @ondragover:preventDefault
+            ondragover="event.preventDefault();"
+            @ondragstart="@((e) => Tabs?.HandleDragStart(e, this))"
+            @ondrop="@((e) => Tabs?.HandleDrop(this))">
+        @if (Tabs?.Type == TabType.EditableCard && Closable)
+        {
+            @Tab
+            <span class="ant-tabs-tab-remove">
+                <Icon Type="close" @onclick="(e) => Tabs?.RemoveTabPane(this)" />
+            </span>
+        }
+        else
+        {
+            @Tab
+        }
+    </button>
+
+}
+else if (IsContent)
+{
+    if (IsActive || ForceRender || HasRendered)
+    {
+        HasRendered = true;
+
+        <div @key="Id"
+             tabindex="@(IsActive ? "0" : "-1")"
+             class="ant-tabs-tabpane @(IsActive ? "ant-tabs-tabpane-active" : "")"
+             id="@($"rc-tabs-{Id}-panel-{Key}")"
+             role="tabpanel" aria-hidden="@(IsActive ? "false" : "true")"
+             aria-labelledby="@($"rc-tabs-{Id}-panel-{Key}")"
+             style="@(IsActive ? "" : "display: none;")">
+
+            @ChildContent
+        </div>
+    }
+}

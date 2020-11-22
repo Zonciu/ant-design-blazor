@@ -315,7 +315,7 @@ namespace AntDesign
                     };
 
                     await pane.SetParametersAsync(ParameterView.FromDictionary(properties));
-                    pane.Parent = this;
+                    pane.Tabs = this;
                     ActivatePane(pane);
                 }
             }
@@ -565,7 +565,7 @@ namespace AntDesign
 
         private TabPane _draggingPane;
 
-        private void HandleDragStart(DragEventArgs args, TabPane pane)
+        internal void HandleDragStart(DragEventArgs args, TabPane pane)
         {
             if (Draggable)
             {
@@ -575,7 +575,7 @@ namespace AntDesign
             }
         }
 
-        private void HandleDrop(TabPane pane)
+        internal void HandleDrop(TabPane pane)
         {
             if (Draggable && _draggingPane != null)
             {
